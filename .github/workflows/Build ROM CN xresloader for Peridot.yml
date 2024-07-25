@@ -1,0 +1,48 @@
+﻿name: Build ROM CN xresloader for Peridot
+on:
+  workflow_dispatch:
+    inputs:
+      URL:
+        description: "Official zip Rom package download address"
+        required: true
+        default: 'https://bn.d.miui.com/OS1.0.14.0.UNPCNXM/miui_PERIDOT_OS1.0.14.0.UNPCNXM_f31a1bac03_14.0.zip'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Maximize your build environment
+        uses: easimon/maximize-build-space@master
+        with:
+          swap-size-mb: 8192
+          root-reserve-mb: 4096
+          temp-reserve-mb: 4096
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+      - name: Check out warehouse files
+        uses: actions/checkout@main
+      - name:  Construct Rom
+        run: |
+          sudo bash "$GITHUB_WORKSPACE"/make_CN.sh ${{ github.event.inputs.URL }} $GITHUB_ENV $GITHUB_WORKSPACE
+      - name: Processing ROM
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
+          cd "$GITHUB_WORKSPACE"/GithubRelease
+          sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/${{ env.rom_name }} ${{ env.rom_name }}
+          cd "$GITHUB_WORKSPACE"
+          touch file.log
+          echo -e "Base package version: ${{ env.vendor_os_version }}\nBase package security patch version: ${{ env.vendor_security_patch }}\nBaseline version: ${{ env.vendor_base_line}}\n\n移植包版本: ${{ env.port_os_version }}\n移植包安全补丁版本: ${{ env.port_security_patch }}\n移植包基线版本: ${{ env.port_base_line }}" > file.log
+      - name: upload to Github Release
+
+        uses: xresloader/upload-to-github-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          artifacts: ${{ github.workspace }}/GithubRelease/*
+          name: ${{ env.port_os_version }}
+          tag: ${{ env.port_os_version }}
+          bodyFile: "${{ github.workspace }}/file.log"
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+

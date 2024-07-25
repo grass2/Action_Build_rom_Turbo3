@@ -34,14 +34,13 @@ jobs:
           touch file.log
           echo -e "Base package version: ${{ env.vendor_os_version }}\nBase package security patch version: ${{ env.vendor_security_patch }}\nBaseline version: ${{ env.vendor_base_line}}\n\n移植包版本: ${{ env.port_os_version }}\n移植包安全补丁版本: ${{ env.port_security_patch }}\n移植包基线版本: ${{ env.port_base_line }}" > file.log
       - name: upload to Github Release
-        uses: svenstaro/upload-release-action@@main
+        uses: svenstaro/upload-release-action@main
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: "${{ github.workspace }}/file.log"
           asset_name: ${{ env.port_os_version }}
           tag: ${{ env.port_os_version }}
           artifacts: ${{ github.workspace }}/GithubRelease/*
-          file: "${{ github.workspace }}/file.log"
           overwrite: true
           body: "This is my release Redmi turbo 3"
 

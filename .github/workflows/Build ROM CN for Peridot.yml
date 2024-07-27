@@ -34,11 +34,21 @@ jobs:
           touch file.log
           echo -e "版本: ${{ env.os_version }}\n安全补丁版本: ${{ env.security_patch }}\n基线版本: ${{ env.base_line }}" > file.log
       - name: Upload to Github Release
+      #  uses: ncipollo/release-action@main
+      #  with:
+      #    artifacts: ${{ github.workspace }}/GithubRelease/*
+      #    name: ${{ env.os_version }}
+      #    tag: ${{ env.os_version }}
+      #    bodyFile: "${{ github.workspace }}/file.log"
+      #    allowUpdates: true
+      #    artifactErrorsFailBuild: true
+
         uses: ncipollo/release-action@main
         with:
           artifacts: ${{ github.workspace }}/GithubRelease/*
-          name: ${{ env.os_version }}
-          tag: ${{ env.os_version }}
+          name: "${{ env.os_version }}"
+          tag: "${{ env.os_version }}"
           bodyFile: "${{ github.workspace }}/file.log"
           allowUpdates: true
           artifactErrorsFailBuild: true
+          token: ${{ secrets.GITHUB

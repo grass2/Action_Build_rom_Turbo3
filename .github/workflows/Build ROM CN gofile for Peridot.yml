@@ -35,21 +35,5 @@ jobs:
           touch file.log
           echo -e "版本: ${{ env.os_version }}\n安全补丁版本: ${{ env.security_patch }}\n基线版本: ${{ env.base_line }}\nLink rom: $Linkrom" | tee file.log
           echo -e "Link: $Linkrom" >> release_notes.txt
-          
-        run: |
-          mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
-          cd "$GITHUB_WORKSPACE"/GithubRelease
-          sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/${{ env.rom_name }} ${{ env.rom_name }}
-          cd "$GITHUB_WORKSPACE"
-          touch file.log
-          echo -e "版本: ${{ env.os_version }}\n安全补丁版本: ${{ env.security_patch }}\n基线版本: ${{ env.base_line }}" > file.log
-          
-      - name: Upload ROM Github Release
-        uses: ncipollo/release-action@main
-        with:
-          name: ${{ env.os_version }}
-          tag: ${{ env.os_version }}
-          bodyFile: "${{ github.workspace }}/file.log"
-          allowUpdates: true
-          artifactErrorsFailBuild: true
+
 
